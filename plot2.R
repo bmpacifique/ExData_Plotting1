@@ -1,13 +1,22 @@
-## getting the data
-dataP1<-read.csv("household_power_consumption.txt", colClasses = "character", sep=";")
-library(lubridate)
-dataP11<-dataP1[((as.Date(dataP1$Date)=="01-02-2007" | as.Date(dataP1$Date)=="02-02-2007")) & !is.na(dataP1$Global_active_power), ]
-dataP11$Global_active_power<-as.numeric(as.character(dataP11$Global_active_power))
-## creating my plot2
-#plot(wday(as.Date(dataP11$Date), label=TRUE), dataP11$Global_active_power)
-lines(dataP11$Global_active_power~wday(as.Date(dataP11$Date), label=TRUE),type='l',col="blue",lwd=2)
-#hist(dP1, col = "red" , main="Global Active Power", xlab="Global Active Power (kilowatts)", ylab="Frequency", sub=" ", col.main="black", col.lab="black", col.sub="black")
-## Copy my plot2 to a PNG file
-library(datasets)
+#######Draw Plot 2
+##1. Load data from file
+data1 <- read.csv("household_power_consumption.txt", sep =";", header = T, na.strings = "?", nrows =2075259, check.names = F, stringsAsFactors = F, comment.char = "", quote='\"')
+##2. Convert column date
+data1$Date <- as.Date(data1$Date, format ="%d/%m/%Y")
+##3. Get subset data 
+myData <- subset(data1, subset= (Date >= "2007-02-01"  & Date <= "2007-02-02"))
+##4.Remove old data  
+rm(data1)
+##5. Convert dates
+myDateTime <- paste(as.Date(myData$Date), myData$Time)
+myData$Datetime <- as.POSIXct(myDateTime)
+
+##6. Draw plot 2
+plot(myData$Datetime,myData$Global_active_power, type="l", xlab= "", ylab = "Global Active Power (killowatss)")
+
+##7. Copy to file
 dev.copy(png, file = "plot2.png")
 dev.off()
+#7. Remove  myData, myDateTime in environment
+rm(myData)
+rm(myDateTime)
